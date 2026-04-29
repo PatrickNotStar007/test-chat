@@ -9,13 +9,8 @@
         "skipLibCheck": true,
         "moduleResolution": "nodenext",
         "resolveJsonModule": true,
-        "forceConsistentCasingInFileNames": true,
-        "allowSyntheticDefaultImports": true,
-        "sourceMap": true,
-        "removeComments": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true
+        "forceConsistentCasingInFileNames": true
     },
-    "include": ["src/**/*", "server.ts"],
-    "exclude": ["node_modules", "dist", "**/*.test.ts"]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
 }
