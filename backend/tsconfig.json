@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "module": "nodenext",
+        "target": "es2022",
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "moduleResolution": "nodenext",
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "removeComments": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true
+    },
+    "include": ["src/**/*", "server.ts"],
+    "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}
