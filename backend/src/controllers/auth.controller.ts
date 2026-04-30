@@ -5,29 +5,26 @@ import { generateToken } from '../routes/utils'
 import { userSchema } from '../validations/signup.validation'
 import z from 'zod'
 
-type UserSignupRequestBody = z.infer<typeof userSchema>
+export type UserRequestBody = z.infer<typeof userSchema>
 
 export const authController = {
-    signup: async (
-        req: Request<{}, {}, UserSignupRequestBody>,
-        res: Response
-    ) => {
-        try {
-            const { fullName, email, password } = req.body
+    signup: async (req: Request<{}, {}, UserRequestBody>, res: Response) => {
+        const { fullName, email, password } = req.body
 
-            const validateUser = userSchema.safeParse({
-                fullName,
-                email,
-                password,
+        const validateUser = userSchema.safeParse({
+            fullName,
+            email,
+            password,
+        })
+        if (validateUser.success === false) {
+            console.error('Ошибка валидации', validateUser.error)
+            return res.status(400).json({
+                message: 'Некорректные данные пользователя',
+                error: z.treeifyError(validateUser.error),
             })
-            if (validateUser.success === false) {
-                console.error('Ошибка валидации', validateUser.error)
-                return res.status(400).json({
-                    message: 'Некорректные данные пользователя',
-                    error: z.treeifyError(validateUser.error),
-                })
-            }
+        }
 
+        try {
             const user = await User.findOne({ email })
             if (user)
                 return res.status(400).json({
@@ -65,11 +62,21 @@ export const authController = {
         }
     },
 
-    login: async (
-        req: Request<{}, {}, UserSignupRequestBody>,
-        res: Response
-    ) => {
+    login: async (req: Request<{}, {}, UserRequestBody>, res: Response) => {
         const { email, password } = req.body
+
+        const validateUser = userSchema.safeParse({
+            email,
+            password,
+        })
+
+        if (validateUser.success === false) {
+            console.error('Ошибка валидации', validateUser.error)
+            return res.status(400).json({
+                message: 'Некорректные данные пользователя',
+                error: z.treeifyError(validateUser.error),
+            })
+        }
 
         try {
             const user = await User.findOne({ email })
@@ -103,6 +110,8 @@ export const authController = {
         res.cookie('jwt', '', { maxAge: 0 })
         return res.status(200).json({ message: 'Выход прошёл успешно' })
     },
+
+    updateProfile: async (req: Request, res: Response) => {},
 }
 
 export default authController
