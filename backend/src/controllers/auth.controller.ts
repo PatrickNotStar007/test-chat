@@ -4,8 +4,12 @@ import bcrypt from 'bcrypt'
 import { generateToken } from '../routes/utils'
 import { userSchema } from '../validations/signup.validation'
 import z from 'zod'
+import cloudinary from '../lib/cloudinary'
 
 export type UserRequestBody = z.infer<typeof userSchema>
+interface UserUpdateProfile {
+    profilePic: string
+}
 
 export const authController = {
     signup: async (req: Request<{}, {}, UserRequestBody>, res: Response) => {
@@ -111,7 +115,37 @@ export const authController = {
         return res.status(200).json({ message: 'Выход прошёл успешно' })
     },
 
-    updateProfile: async (req: Request, res: Response) => {},
+    updateProfile: async (
+        req: Request<{}, {}, UserUpdateProfile>,
+        res: Response
+    ) => {
+        try {
+            const { profilePic } = req.body
+            if (!profilePic)
+                return res
+                    .status(400)
+                    .json({ message: 'Изображение обязательно' })
+
+            const userId = (req as any).user._id
+
+            const uploadResponse = await cloudinary.uploader.upload(profilePic)
+
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                {
+                    profilePic: uploadResponse.secure_url,
+                },
+                { returnDocument: 'after' }
+            )
+
+            return res.status(200).json(updatedUser)
+        } catch (error) {
+            console.error('Ошибка при обновлении профиля: ', error)
+            return res
+                .status(500)
+                .json({ message: 'Внутренняя ошибка сервера' })
+        }
+    },
 }
 
 export default authController
