@@ -6,14 +6,16 @@ import { userSchema } from '../validations/signup.validation'
 import z from 'zod'
 import cloudinary from '../lib/cloudinary'
 
-export type UserRequestBody = z.infer<typeof userSchema>
+type AuthBodyRequest<T> = Request<{}, {}, T>
 
-interface UserUpdateProfile {
+type UserBodyRequest = z.infer<typeof userSchema>
+
+interface UserUpdateBody {
     profilePic: string
 }
 
 export const authController = {
-    signup: async (req: Request<{}, {}, UserRequestBody>, res: Response) => {
+    signup: async (req: AuthBodyRequest<UserBodyRequest>, res: Response) => {
         const { fullName, email, password } = req.body
 
         const validateUser = userSchema.safeParse({
@@ -67,7 +69,7 @@ export const authController = {
         }
     },
 
-    login: async (req: Request<{}, {}, UserRequestBody>, res: Response) => {
+    login: async (req: AuthBodyRequest<UserBodyRequest>, res: Response) => {
         const { email, password } = req.body
 
         const validateUser = userSchema.safeParse({
@@ -116,7 +118,10 @@ export const authController = {
         return res.status(200).json({ message: 'Выход прошёл успешно' })
     },
 
-    updateProfile: async (req: Request, res: Response) => {
+    updateProfile: async (
+        req: AuthBodyRequest<UserUpdateBody>,
+        res: Response
+    ) => {
         try {
             const { profilePic } = req.body
             if (!profilePic)
