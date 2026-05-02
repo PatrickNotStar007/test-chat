@@ -10,6 +10,8 @@ interface Config {
     cloudinaryCloudName: string
     cloudinaryApiKey: string
     cloudinaryApiSecret: string
+    arcjetKey: string
+    arcjetEnv: string
 }
 
 const config: Config = {
@@ -20,6 +22,8 @@ const config: Config = {
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY || '',
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET || '',
+    arcjetKey: process.env.ARCJET_KEY || '',
+    arcjetEnv: process.env.ARCJET_ENV || '',
 }
 
 export default config

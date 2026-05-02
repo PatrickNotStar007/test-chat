@@ -7,6 +7,7 @@ import z from 'zod'
 import cloudinary from '../lib/cloudinary'
 
 export type UserRequestBody = z.infer<typeof userSchema>
+
 interface UserUpdateProfile {
     profilePic: string
 }
@@ -115,10 +116,7 @@ export const authController = {
         return res.status(200).json({ message: 'Выход прошёл успешно' })
     },
 
-    updateProfile: async (
-        req: Request<{}, {}, UserUpdateProfile>,
-        res: Response
-    ) => {
+    updateProfile: async (req: Request, res: Response) => {
         try {
             const { profilePic } = req.body
             if (!profilePic)
