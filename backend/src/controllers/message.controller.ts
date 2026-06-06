@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import User from '../models/user.model'
 import Message from '../models/message.model'
 import cloudinary from '../lib/cloudinary'
+import { errorResponse } from '../utils/responses'
 
 export const messageController = {
-    getAllContacts: async (req: Request, res: Response) => {
+    getAllContacts: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const loggedInUserId = (req as { user?: { _id: string } }).user?._id
             const filteredUsers = await User.find({
@@ -14,11 +15,15 @@ export const messageController = {
             return res.status(200).json(filteredUsers)
         } catch (error) {
             console.error('Ошибка в getAllContacts', error)
-            return res.status(500).json({ message: 'Ошибка сервера' })
+            next(error)
         }
     },
 
-    getChatPartners: async (req: Request<{ id: string }>, res: Response) => {
+    getChatPartners: async (
+        req: Request<{ id: string }>,
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const loggedInUserId = (req as any).user?._id
 
@@ -46,13 +51,14 @@ export const messageController = {
             return res.status(200).json(chatPartners)
         } catch (error) {
             console.error('Ошибка в getChatPartners', error)
-            return res.status(500).json({ message: 'Ошибка сервера' })
+            next(error)
         }
     },
 
     getMessagesByUserId: async (
         req: Request<{ id: string }>,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
             const myId = (req as { user?: { _id: string } }).user?._id
@@ -68,29 +74,33 @@ export const messageController = {
             return res.status(200).json(messages)
         } catch (error) {
             console.error('Ошибка в getMessagesByUserId', error)
-            return res.status(500).json({ message: 'Ошибка сервера' })
+            next(error)
         }
     },
 
-    sendMessage: async (req: Request<{ id: string }>, res: Response) => {
+    sendMessage: async (
+        req: Request<{ id: string }>,
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const { text, image } = req.body
             const { id: recieverId } = req.params
             const senderId = (req as any).user?._id
 
             if (!text && !image)
-                return res
-                    .status(400)
-                    .json({ message: 'Текст или картинка обязательны' })
+                return errorResponse(res, 400, 'Текст или картинка обязательны')
 
             if (senderId.equals(recieverId))
-                return res
-                    .status(400)
-                    .json({ message: 'Нельзя отправлять сообщения себе' })
+                return errorResponse(
+                    res,
+                    400,
+                    'Нельзя отправлять сообщения себе'
+                )
 
             const recieverExists = await User.exists({ _id: recieverId })
             if (!recieverExists)
-                return res.status(404).json({ message: 'Получатель не найден' })
+                return errorResponse(res, 404, 'Получатель не найден')
 
             let imageUrl
             if (image) {
@@ -110,7 +120,7 @@ export const messageController = {
             return res.status(201).json(newMessage)
         } catch (error) {
             console.error('Ошибка в sendMessage', error)
-            return res.status(500).json({ message: 'Ошибка сервера' })
+            next(error)
         }
     },
 }
