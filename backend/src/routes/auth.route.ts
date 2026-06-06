@@ -5,7 +5,7 @@ import arcjetProtection from '../middlewares/arcjet.middleware'
 
 const router = express.Router()
 
-router.use(arcjetProtection)
+// router.use(arcjetProtection)
 
 router.post('/signup', authController.signup)
 router.post('/login', authController.login)

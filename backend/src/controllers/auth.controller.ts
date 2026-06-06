@@ -2,17 +2,18 @@ import { Request, Response } from 'express'
 import User from '../models/user.model'
 import bcrypt from 'bcrypt'
 import { generateToken } from '../routes/utils'
-import { userSchema } from '../validations/signup.validation'
+import { loginSchema, userSchema } from '../validations/auth.validation'
 import z from 'zod'
 import cloudinary from '../lib/cloudinary'
 import {
-    AuthBodyRequest,
-    UserBodyRequest,
-    UserUpdateProfile,
+    AuthRequest,
+    LoginBody,
+    UpdateBody,
+    UserBody,
 } from '../types/user.types'
 
 export const authController = {
-    signup: async (req: AuthBodyRequest<UserBodyRequest>, res: Response) => {
+    signup: async (req: AuthRequest<UserBody>, res: Response) => {
         const { fullName, email, password } = req.body
 
         const validateUser = userSchema.safeParse({
@@ -66,16 +67,16 @@ export const authController = {
         }
     },
 
-    login: async (req: AuthBodyRequest<UserBodyRequest>, res: Response) => {
+    login: async (req: AuthRequest<LoginBody>, res: Response) => {
         const { email, password } = req.body
 
-        const validateUser = userSchema.safeParse({
+        const validateUser = loginSchema.safeParse({
             email,
             password,
         })
 
         if (validateUser.success === false) {
-            console.error('Ошибка валидации', validateUser.error)
+            console.error('Ошибка валидации при логине', validateUser.error)
             return res.status(400).json({
                 message: 'Некорректные данные пользователя',
                 error: z.treeifyError(validateUser.error),
@@ -116,7 +117,7 @@ export const authController = {
     },
 
     updateProfile: async (
-        req: AuthBodyRequest<UserUpdateProfile> | any,
+        req: AuthRequest<UpdateBody> | any,
         res: Response
     ) => {
         try {

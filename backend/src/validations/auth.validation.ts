@@ -17,3 +17,16 @@ export const userSchema = z.object({
         .trim()
         .min(6, 'Пароль должен содержать минимум 6 символов'),
 })
+
+export const loginSchema = z.object({
+    email: z
+        .string()
+        .nonempty('Почта обязательна')
+        .check(z.email('Неверный формат почты'))
+        .trim(),
+    password: z
+        .string()
+        .nonempty('Пароль обязателен')
+        .trim()
+        .min(6, 'Пароль должен содержать минимум 6 символов'),
+})

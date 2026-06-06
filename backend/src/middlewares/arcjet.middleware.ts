@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import aj from '../lib/arcjet'
 import { isSpoofedBot } from '@arcjet/inspect'
+import { errorResponse } from '../utils/responses'
 
 const arcjetProtection = async (
     req: Request,
@@ -12,27 +13,22 @@ const arcjetProtection = async (
 
         if (decision.isDenied()) {
             if (decision.reason.isRateLimit()) {
-                return res
-                    .status(429)
-                    .json({ message: 'Слишком много запросов' })
+                return errorResponse(res, 429, 'Слишком много запросов')
             } else if (decision.reason.isBot()) {
-                return res
-                    .status(403)
-                    .json({ message: 'Ботам доступ запрещён' })
+                return errorResponse(res, 403, 'Ботам доступ запрещён')
             } else {
-                return res.status(403).json({ message: 'Доступ запрещён' })
+                return errorResponse(res, 403, 'Доступ запрещён')
             }
         }
 
         if (decision.results.some(isSpoofedBot)) {
-            return res.status(403).json({ message: 'Ботам доступ запрещён' })
+            return errorResponse(res, 403, 'Ботам доступ запрещён')
         }
 
         next()
     } catch (error) {
         console.error('Ошибка arcjet')
-
-        next()
+        next(error)
     }
 }
 

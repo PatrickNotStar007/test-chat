@@ -1,13 +1,14 @@
 import z from 'zod'
-import { userSchema } from '../validations/signup.validation'
+import { userSchema } from '../validations/auth.validation'
 import { Request } from 'express'
 import { Types } from 'mongoose'
 
-export type UserBodyRequest = z.infer<typeof userSchema>
+export type UserBody = z.infer<typeof userSchema>
+export type LoginBody = Omit<UserBody, 'fullName'>
 
-export type AuthBodyRequest<T> = Request<{}, {}, T>
+export type AuthRequest<T> = Request<{}, {}, T>
 
-export interface UserUpdateProfile {
-    user: UserBodyRequest & { _id: Types.ObjectId }
+export interface UpdateBody {
+    user: UserBody & { _id: Types.ObjectId }
     profilePic: string
 }
