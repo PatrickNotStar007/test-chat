@@ -7,7 +7,7 @@ import { errorResponse } from '../utils/responses'
 export const messageController = {
     getAllContacts: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const loggedInUserId = (req as { user?: { _id: string } }).user?._id
+            const loggedInUserId = req.user?._id
             const filteredUsers = await User.find({
                 _id: { $ne: loggedInUserId },
             }).select('-password')
@@ -25,7 +25,10 @@ export const messageController = {
         next: NextFunction
     ) => {
         try {
-            const loggedInUserId = (req as any).user?._id
+            const loggedInUserId = req.user?._id
+            if (!loggedInUserId) {
+                return errorResponse(res, 401, 'Пользователь не авторизован')
+            }
 
             const messages = await Message.find({
                 $or: [
@@ -62,6 +65,10 @@ export const messageController = {
     ) => {
         try {
             const myId = req.user?._id
+            if (!myId) {
+                return errorResponse(res, 401, 'Пользователь не авторизован')
+            }
+
             const { id: userToChatId } = req.params
 
             const messages = await Message.find({
@@ -86,7 +93,11 @@ export const messageController = {
         try {
             const { text, image } = req.body
             const { id: recieverId } = req.params
-            const senderId = (req as any).user?._id
+            const senderId = req.user?._id
+
+            if (!senderId) {
+                return errorResponse(res, 401, 'Пользователь не авторизован')
+            }
 
             if (!text && !image)
                 return errorResponse(res, 400, 'Текст или картинка обязательны')
