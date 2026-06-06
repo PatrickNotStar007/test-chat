@@ -11,6 +11,6 @@ router.use(authMiddleware)
 router.get('/contacts', messageController.getAllContacts)
 router.get('/chats', messageController.getChatPartners)
 router.get('/:id', messageController.getMessagesByUserId)
-router.get('/send/:id', messageController.sendMessage)
+router.post('/send/:id', messageController.sendMessage)
 
 export default router

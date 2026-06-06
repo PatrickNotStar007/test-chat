@@ -61,7 +61,7 @@ export const messageController = {
         next: NextFunction
     ) => {
         try {
-            const myId = (req as { user?: { _id: string } }).user?._id
+            const myId = req.user?._id
             const { id: userToChatId } = req.params
 
             const messages = await Message.find({
