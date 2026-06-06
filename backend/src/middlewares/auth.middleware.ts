@@ -2,14 +2,14 @@ import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import config from '../config/config'
 import User from '../models/user.model'
-import { UserRequestBody } from '../controllers/auth.controller'
+import { UserBodyRequest } from '../types/user.types'
 
 interface DecodedToken {
     userId: number
 }
 
 export const authMiddleware = async (
-    req: Request<{}, {}, UserRequestBody>,
+    req: Request<{}, {}, UserBodyRequest>,
     res: Response,
     next: NextFunction
 ) => {

@@ -5,14 +5,11 @@ import { generateToken } from '../routes/utils'
 import { userSchema } from '../validations/signup.validation'
 import z from 'zod'
 import cloudinary from '../lib/cloudinary'
-
-type AuthBodyRequest<T> = Request<{}, {}, T>
-
-type UserBodyRequest = z.infer<typeof userSchema>
-
-interface UserUpdateBody {
-    profilePic: string
-}
+import {
+    AuthBodyRequest,
+    UserBodyRequest,
+    UserUpdateProfile,
+} from '../types/user.types'
 
 export const authController = {
     signup: async (req: AuthBodyRequest<UserBodyRequest>, res: Response) => {
@@ -119,7 +116,7 @@ export const authController = {
     },
 
     updateProfile: async (
-        req: AuthBodyRequest<UserUpdateBody>,
+        req: AuthBodyRequest<UserUpdateProfile> | any,
         res: Response
     ) => {
         try {
@@ -129,7 +126,7 @@ export const authController = {
                     .status(400)
                     .json({ message: 'Изображение обязательно' })
 
-            const userId = (req as any).user._id
+            const userId = req.user._id
 
             const uploadResponse = await cloudinary.uploader.upload(profilePic)
 

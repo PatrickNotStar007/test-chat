@@ -6,5 +6,5 @@ export const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    console.log(err.message)
+    console.error(err.message)
 }
