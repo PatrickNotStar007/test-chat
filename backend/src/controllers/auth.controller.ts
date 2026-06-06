@@ -116,10 +116,7 @@ export const authController = {
         return res.status(200).json({ message: 'Выход прошёл успешно' })
     },
 
-    updateProfile: async (
-        req: AuthRequest<UpdateBody> | any,
-        res: Response
-    ) => {
+    updateProfile: async (req: AuthRequest<UpdateBody>, res: Response) => {
         try {
             const { profilePic } = req.body
             if (!profilePic)
@@ -127,7 +124,7 @@ export const authController = {
                     .status(400)
                     .json({ message: 'Изображение обязательно' })
 
-            const userId = req.user._id
+            const userId = req.user?._id
 
             const uploadResponse = await cloudinary.uploader.upload(profilePic)
 
