@@ -13,14 +13,18 @@ interface AuthState {
     authUser: User | null
     isCheckingAuth: boolean
     isSigningUp: boolean
+    isLoggingIn: boolean
     checkAuth: () => Promise<void>
     signup: (data: any) => Promise<void>
+    login: (data: any) => Promise<void>
+    logout: (data: any) => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
     authUser: null,
     isCheckingAuth: true,
     isSigningUp: false,
+    isLoggingIn: false,
 
     checkAuth: async () => {
         try {
@@ -47,6 +51,32 @@ export const useAuthStore = create<AuthState>((set) => ({
             else toast.error('Произошла ошибка при создании аккаунта')
         } finally {
             set({ isSigningUp: false })
+        }
+    },
+
+    login: async (data) => {
+        set({ isLoggingIn: true })
+
+        try {
+            const res = await axiosInstance.post('/auth/login', data)
+            set({ authUser: res.data })
+            toast.success('Вход в аккаунт совершён успешно')
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data.message)
+                toast.error(error.response.data.message)
+            else toast.error('Произошла ошибка при создании аккаунта')
+        } finally {
+            set({ isLoggingIn: false })
+        }
+    },
+
+    logout: async () => {
+        try {
+            await axiosInstance.post('/auth/logout')
+            set({ authUser: null })
+            toast.success('Выход совершён успешно')
+        } catch (error) {
+            toast.error('Ошибка при выходе из аккаунта')
         }
     },
 }))

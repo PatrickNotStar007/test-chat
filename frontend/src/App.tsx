@@ -8,13 +8,15 @@ import PageLoader from './components/PageLoader'
 import { Toaster } from 'react-hot-toast'
 
 const App = () => {
-    const { authUser, isCheckingAuth, checkAuth } = useAuthStore()
+    // const { authUser, isCheckingAuth, checkAuth } = useAuthStore()
+
+    const authUser = useAuthStore((state) => state.authUser)
+    const isCheckingAuth = useAuthStore((state) => state.isCheckingAuth)
+    const checkAuth = useAuthStore((state) => state.checkAuth)
 
     useEffect(() => {
         checkAuth()
     }, [checkAuth])
-
-    console.log(authUser)
 
     if (isCheckingAuth) return <PageLoader />
 

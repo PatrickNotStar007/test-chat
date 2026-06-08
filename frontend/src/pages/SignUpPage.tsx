@@ -127,7 +127,7 @@ const SignUpPage = () => {
 
                     <div className="mt-6 text-center">
                         <Link to="/login" className="auth-link">
-                            Уже есть аккаунт? Войти
+                            Уже есть аккаунт? Войди
                         </Link>
                     </div>
                 </div>
