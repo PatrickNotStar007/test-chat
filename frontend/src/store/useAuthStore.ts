@@ -7,7 +7,12 @@ interface User {
     id: string
     fullName: string
     email: string
+    profilePic: string
 }
+
+type SignupData = Omit<User, 'id' | 'profilePic'> & { password: string }
+type LoginData = Pick<User, 'email'> & { password: string }
+type UpdateProfileData = Partial<Omit<User, 'id'>>
 
 interface AuthState {
     authUser: User | null
@@ -15,9 +20,10 @@ interface AuthState {
     isSigningUp: boolean
     isLoggingIn: boolean
     checkAuth: () => Promise<void>
-    signup: (data: any) => Promise<void>
-    login: (data: any) => Promise<void>
-    logout: (data: any) => Promise<void>
+    signup: (data: SignupData) => Promise<void>
+    login: (data: LoginData) => Promise<void>
+    logout: () => Promise<void>
+    updateProfile: (data: UpdateProfileData) => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -28,7 +34,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     checkAuth: async () => {
         try {
-            const res = await axiosInstance.get('/auth/check')
+            const res = await axiosInstance.get<User>('/auth/check')
             set({ authUser: res.data })
         } catch (error) {
             console.error('Ошибка в checkAuth', error)
@@ -42,7 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ isSigningUp: true })
 
         try {
-            const res = await axiosInstance.post('/auth/signup', data)
+            const res = await axiosInstance.post<User>('/auth/signup', data)
             set({ authUser: res.data })
             toast.success('Аккаунт успешно создан')
         } catch (error) {
@@ -58,13 +64,13 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ isLoggingIn: true })
 
         try {
-            const res = await axiosInstance.post('/auth/login', data)
+            const res = await axiosInstance.post<User>('/auth/login', data)
             set({ authUser: res.data })
             toast.success('Вход в аккаунт совершён успешно')
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data.message)
                 toast.error(error.response.data.message)
-            else toast.error('Произошла ошибка при создании аккаунта')
+            else toast.error('Произошла ошибка при входе в аккаунт')
         } finally {
             set({ isLoggingIn: false })
         }
@@ -77,6 +83,20 @@ export const useAuthStore = create<AuthState>((set) => ({
             toast.success('Выход совершён успешно')
         } catch (error) {
             toast.error('Ошибка при выходе из аккаунта')
+        }
+    },
+
+    updateProfile: async (data) => {
+        try {
+            const res = await axiosInstance.put<User>(
+                '/auth/update-profile',
+                data
+            )
+            set({ authUser: res.data })
+        } catch (error) {
+            console.error('Ошибка в updateProfile', data)
+            if (axios.isAxiosError(error) && error.response?.data.message)
+                toast.error(error.response.data.message)
         }
     },
 }))
