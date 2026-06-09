@@ -27,13 +27,13 @@ const ProfileHeader = () => {
     }
 
     return (
-        <div className="p-6 border-b border-slate-700/50">
+        <div className="p-6 border-b border-orange-500/20">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     {/* аватар */}
-                    <div className="avatar online">
+                    <div className="avatar avatar-online">
                         <button
-                            className="size-14 rounded-full overflow-hidden relative group"
+                            className="size-14 rounded-full overflow-hidden relative group ring-2 ring-orange-500/30 hover:ring-orange-500/50 transition-all"
                             onClick={() => {
                                 if (fileInputRef.current)
                                     fileInputRef.current.click()
@@ -50,10 +50,10 @@ const ProfileHeader = () => {
                             />
 
                             <div
-                                className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100
+                                className="absolute inset-0 bg-orange-950/80 opacity-0 group-hover:opacity-100
                             flex items-center justify-center transition-opacity"
                             >
-                                <span className="text-white text-xs">
+                                <span className="text-orange-200 text-xs font-medium">
                                     Поменять
                                 </span>
                             </div>
@@ -70,11 +70,11 @@ const ProfileHeader = () => {
 
                     {/* имя и текст */}
                     <div>
-                        <h3 className="text-slate-200 font-medium text-base max-w-45 truncate">
+                        <h3 className="text-orange-100 font-medium text-base max-w-45 truncate">
                             {authUser?.fullName}
                         </h3>
 
-                        <p className="text-slate-400 text-xs">В сети</p>
+                        <p className="text-orange-400/60 text-xs">В сети</p>
                     </div>
                 </div>
 
@@ -82,7 +82,7 @@ const ProfileHeader = () => {
                 <div className="flex gap-4 items-center">
                     {/* LOGOUT BTN */}
                     <button
-                        className="text-slate-400 hover:text-slate-200 transition-colors"
+                        className="text-orange-400/60 hover:text-orange-400 transition-colors"
                         onClick={logout}
                     >
                         <LogOutIcon className="size-5" />
@@ -90,7 +90,7 @@ const ProfileHeader = () => {
 
                     {/* SOUND TOGGLE BTN */}
                     <button
-                        className="text-slate-400 hover:text-slate-200 transition-colors"
+                        className="text-orange-400/60 hover:text-orange-400 transition-colors"
                         onClick={() => toggleSound()}
                     >
                         {isSoundEnabled ? (
