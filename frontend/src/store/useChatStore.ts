@@ -10,6 +10,13 @@ interface User {
     profilePic: string
 }
 
+interface Message {
+    senderId: string
+    recieverId: string
+    text?: string | null | undefined
+    image?: string
+}
+
 type ChatTab = 'chats' | 'contacts'
 
 interface ChatState {
@@ -17,6 +24,7 @@ interface ChatState {
     chats: User[]
     activeTab: ChatTab
     selectedUser: User | null
+    messages: Message[]
     isUsersLoading: boolean
     isMessagesLoading: boolean
     isSoundEnabled: boolean
@@ -25,9 +33,10 @@ interface ChatState {
 interface ChatActions {
     toggleSound: () => void
     setActiveTab: (tab: ChatTab) => void
-    setSelectedUser: (selectedUser: User) => void
+    setSelectedUser: (selectedUser: User | null) => void
     getAllContacts: () => Promise<void>
     getMyChatPartners: () => Promise<void>
+    getMessagesByUserId: (userId: string) => Promise<void>
 }
 
 type ChatStore = ChatState & ChatActions
@@ -37,6 +46,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     chats: [],
     activeTab: 'chats',
     selectedUser: null,
+    messages: [],
     isUsersLoading: false,
     isMessagesLoading: false,
     isSoundEnabled: localStorage.getItem('isSoundEnabled') === 'true',
@@ -48,7 +58,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
     setActiveTab: (tab: ChatTab) => set({ activeTab: tab }),
 
-    setSelectedUser: (selectedUser: User) => set({ selectedUser }),
+    setSelectedUser: (selectedUser: User | null) => set({ selectedUser }),
 
     getAllContacts: async () => {
         set({ isUsersLoading: true })
@@ -75,6 +85,23 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             else toast.error('Произошла ошибка при получении контактов')
         } finally {
             set({ isUsersLoading: false })
+        }
+    },
+
+    getMessagesByUserId: async (userId) => {
+        set({ isMessagesLoading: true })
+
+        try {
+            const res = await axiosInstance.get<Message[]>(
+                `/messages/${userId}`
+            )
+            set({ messages: res.data })
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data.message)
+                toast.error(error.response.data.message)
+            else toast.error('Произошла ошибка при получении сообщений')
+        } finally {
+            set({ isMessagesLoading: false })
         }
     },
 }))
