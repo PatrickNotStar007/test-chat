@@ -4,6 +4,7 @@ import { create } from 'zustand'
 import { axiosInstance } from '../lib/axios'
 
 interface User {
+    _id: string
     fullName: string
     email: string
     profilePic: string
