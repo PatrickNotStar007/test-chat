@@ -11,10 +11,12 @@ interface User {
 }
 
 interface Message {
+    _id: string
     senderId: string
     recieverId: string
     text?: string | null | undefined
     image?: string
+    createdAt: any
 }
 
 type ChatTab = 'chats' | 'contacts'
