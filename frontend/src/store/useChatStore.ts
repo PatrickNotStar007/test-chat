@@ -2,6 +2,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { create } from 'zustand'
 import { axiosInstance } from '../lib/axios'
+import { useAuthStore } from './useAuthStore'
 
 interface User {
     _id: string
@@ -39,6 +40,7 @@ interface ChatActions {
     getAllContacts: () => Promise<void>
     getMyChatPartners: () => Promise<void>
     getMessagesByUserId: (userId: string) => Promise<void>
+    sendMessage: (messageData: any) => Promise<void>
 }
 
 type ChatStore = ChatState & ChatActions
@@ -104,6 +106,38 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             else toast.error('Произошла ошибка при получении сообщений')
         } finally {
             set({ isMessagesLoading: false })
+        }
+    },
+
+    sendMessage: async (messageData) => {
+        const { selectedUser, messages } = get()
+        const { authUser } = useAuthStore.getState()
+
+        const tempId = `temp-${Date.now()}`
+
+        const optimisticMessage = {
+            _id: tempId,
+            senderId: authUser?._id,
+            recieverId: selectedUser?._id,
+            text: messageData.text,
+            image: messageData.image,
+            createdAt: new Date().toISOString(),
+            isOptimistic: true,
+        } as any
+
+        set({ messages: [...messages, optimisticMessage] })
+
+        try {
+            const res = await axiosInstance.post<
+                Omit<Message, '_id' & 'createdAt'>
+            >(`/messages/send/${selectedUser?._id}`, messageData)
+            set({ messages: messages.concat(res.data) })
+        } catch (error) {
+            set({ messages: messages })
+
+            if (axios.isAxiosError(error) && error.response?.data.message)
+                toast.error(error.response.data.message)
+            else toast.error('Произошла ошибка при отправке сообщения')
         }
     },
 }))

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useChatStore } from '../store/useChatStore'
 import { useAuthStore } from '../store/useAuthStore'
 import ChatHeader from './ChatHeader'
@@ -10,10 +10,16 @@ const ChatContainer = () => {
     const { selectedUser, getMessagesByUserId, messages, isMessagesLoading } =
         useChatStore()
     const { authUser } = useAuthStore()
+    const messageEndRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
         if (selectedUser) getMessagesByUserId(selectedUser._id)
     }, [selectedUser, getMessagesByUserId])
+
+    useEffect(() => {
+        if (messageEndRef.current)
+            messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }, [messages])
 
     if (!selectedUser) return null
 
@@ -26,11 +32,11 @@ const ChatContainer = () => {
                         {messages.map((msg) => (
                             <div
                                 key={msg._id}
-                                className={`chat ${msg.senderId === authUser?.id ? 'chat-end' : 'chat-start'}`}
+                                className={`chat ${msg.senderId === authUser?._id ? 'chat-end' : 'chat-start'}`}
                             >
                                 <div
                                     className={`chat-bubble relative ${
-                                        msg.senderId === authUser?.id
+                                        msg.senderId === authUser?._id
                                             ? 'bg-orange-500 text-white'
                                             : 'bg-orange-950/40 text-orange-100 border border-orange-500/20'
                                     }`}
@@ -56,6 +62,7 @@ const ChatContainer = () => {
                                 </div>
                             </div>
                         ))}
+                        <div ref={messageEndRef} />
                     </div>
                 ) : isMessagesLoading ? (
                     <MessagesLoadingSkeleton />
