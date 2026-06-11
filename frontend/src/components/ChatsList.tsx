@@ -9,7 +9,7 @@ const ChatsList = () => {
 
     useEffect(() => {
         getMyChatPartners()
-    }, [getMyChatPartners])
+    }, [])
 
     if (isUsersLoading) return <UsersLoadingSkeleton />
     if (chats.length === 0) return <NoChatsFound />

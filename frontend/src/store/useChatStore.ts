@@ -15,9 +15,9 @@ interface Message {
     _id: string
     senderId: string
     recieverId: string
-    text?: string | null | undefined
+    text?: string
     image?: string
-    createdAt: any
+    createdAt: string
 }
 
 type ChatTab = 'chats' | 'contacts'
@@ -40,7 +40,7 @@ interface ChatActions {
     getAllContacts: () => Promise<void>
     getMyChatPartners: () => Promise<void>
     getMessagesByUserId: (userId: string) => Promise<void>
-    sendMessage: (messageData: any) => Promise<void>
+    sendMessage: (messageData: Message) => Promise<void>
 }
 
 type ChatStore = ChatState & ChatActions
@@ -82,7 +82,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         set({ isUsersLoading: true })
         try {
             const res = await axiosInstance.get<User[]>('/messages/chats')
-            set({ allContacts: res.data })
+            set({ chats: res.data })
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data.message)
                 toast.error(error.response.data.message)
@@ -115,17 +115,19 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
         const tempId = `temp-${Date.now()}`
 
-        const optimisticMessage = {
-            _id: tempId,
-            senderId: authUser?._id,
-            recieverId: selectedUser?._id,
-            text: messageData.text,
-            image: messageData.image,
-            createdAt: new Date().toISOString(),
-            isOptimistic: true,
-        } as any
+        if (authUser && selectedUser) {
+            const optimisticMessage = {
+                _id: tempId,
+                senderId: authUser._id,
+                recieverId: selectedUser._id,
+                text: messageData.text,
+                image: messageData.image,
+                createdAt: new Date().toISOString(),
+                isOptimistic: true,
+            }
 
-        set({ messages: [...messages, optimisticMessage] })
+            set({ messages: [...messages, optimisticMessage] })
+        }
 
         try {
             const res = await axiosInstance.post<
