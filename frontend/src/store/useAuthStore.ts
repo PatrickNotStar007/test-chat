@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import { io, type Socket } from 'socket.io-client'
 
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'http://localhost:4000'
 
 interface User {
     _id: string
@@ -119,12 +119,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         if (!authUser || get().socket?.connected) return
 
         const socket = io(BASE_URL, { withCredentials: true })
-        socket.connect()
-        set({ socket })
 
         socket.on('getOnlineUsers', (userIds) => {
             set({ onlineUsers: userIds })
         })
+
+        socket.connect()
+        set({ socket })
     },
 
     disconnectSocket: () => {
