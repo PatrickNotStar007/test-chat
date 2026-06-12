@@ -3,6 +3,7 @@ import User from '../models/user.model'
 import Message from '../models/message.model'
 import cloudinary from '../lib/cloudinary'
 import { errorResponse } from '../utils/responses'
+import { getReceiverSocketId, io } from '../lib/socket'
 
 export const messageController = {
     getAllContacts: async (req: Request, res: Response, next: NextFunction) => {
@@ -127,6 +128,12 @@ export const messageController = {
             })
 
             await newMessage.save()
+
+            const receiverSocketId = getReceiverSocketId(recieverId)
+
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit('newMessage', newMessage)
+            }
 
             return res.status(201).json(newMessage)
         } catch (error) {
