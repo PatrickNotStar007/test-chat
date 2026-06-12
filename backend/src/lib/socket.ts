@@ -24,12 +24,12 @@ io.on('connection', (socket) => {
     const userId = socket.userId
     userSocketMap.set(userId, socket.id)
 
-    io.emit('getOnlineUsers', Object.keys(userSocketMap))
+    io.emit('getOnlineUsers', Array.from(userSocketMap.keys()))
 
     socket.on('disconnect', () => {
         console.log('Пользователь отключился', socket.user.fullName)
         userSocketMap.delete(userId)
-        io.emit('getOnlineUsers', Object.keys(userSocketMap))
+        io.emit('getOnlineUsers', Array.from(userSocketMap.keys()))
     })
 })
 
