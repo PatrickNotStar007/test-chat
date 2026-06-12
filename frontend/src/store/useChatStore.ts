@@ -41,6 +41,8 @@ interface ChatActions {
     getMyChatPartners: () => Promise<void>
     getMessagesByUserId: (userId: string) => Promise<void>
     sendMessage: (messageData: Message) => Promise<void>
+    subsribeToMessages: () => void
+    unsubsribeFromMessages: () => void
 }
 
 type ChatStore = ChatState & ChatActions
@@ -141,5 +143,41 @@ export const useChatStore = create<ChatStore>((set, get) => ({
                 toast.error(error.response.data.message)
             else toast.error('Произошла ошибка при отправке сообщения')
         }
+    },
+
+    subsribeToMessages: () => {
+        const { selectedUser } = get()
+        if (!selectedUser) return
+
+        const socket = useAuthStore.getState().socket
+
+        socket?.on('newMessage', (newMessage: Message) => {
+            const isMessageSentFromSelectedUser =
+                newMessage.senderId === selectedUser._id
+            if (!isMessageSentFromSelectedUser) return
+
+            const currentMessage = get().messages
+            set({ messages: [...currentMessage, newMessage] })
+
+            const isSoundEnabled = get().isSoundEnabled
+
+            if (isSoundEnabled) {
+                console.log(isSoundEnabled)
+
+                const notificationSound = new Audio(
+                    '/sounds/notification_sound.mp3'
+                )
+
+                notificationSound.currentTime = 0
+                notificationSound
+                    .play()
+                    .catch((error) => console.log('Ошибка аудио: ', error))
+            }
+        })
+    },
+
+    unsubsribeFromMessages: () => {
+        const socket = useAuthStore.getState().socket
+        socket?.off('newMessage')
     },
 }))

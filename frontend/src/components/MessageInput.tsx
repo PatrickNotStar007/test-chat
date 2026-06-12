@@ -9,13 +9,13 @@ const MessageInput = () => {
 
     const fileInputRef = useRef<HTMLInputElement>(null)
 
-    const { sendMessage, isSoundEnabled } = useChatStore()
+    const { sendMessage } = useChatStore()
 
     const handleSendMessage = (e: FormEvent) => {
         e.preventDefault()
         if (!text.trim() && !imagePreview) return
 
-        sendMessage({ text: text.trim(), image: imagePreview })
+        sendMessage({ text: text.trim(), image: imagePreview || undefined })
         setText('')
         setImagePreview(null)
         if (fileInputRef.current) fileInputRef.current.value = ''

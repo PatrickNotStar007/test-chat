@@ -21,7 +21,7 @@ const LoginPage = () => {
     }
 
     return (
-        <div className="w-full max-w-6xl h-auto max-h-[800px] z-99">
+        <div className="w-full max-w-6xl h-auto max-h-200 z-99">
             <div className="w-full flex flex-col md:flex-row rounded-2xl overflow-hidden">
                 {/* левая панель  */}
                 <div className="md:w-1/2 p-8 flex items-center justify-center md:border-r border-orange-500/20">

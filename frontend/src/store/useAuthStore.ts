@@ -13,7 +13,7 @@ interface User {
     profilePic: string
 }
 
-type SignupData = Omit<User, 'id' | 'profilePic'> & { password: string }
+type SignupData = Omit<User, '_id' | 'profilePic'> & { password: string }
 type LoginData = Pick<User, 'email'> & { password: string }
 type UpdateProfileData = Partial<Omit<User, 'id'>>
 
