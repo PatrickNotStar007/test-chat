@@ -1,8 +1,8 @@
-import app from './app'
 import config from './config/config'
 import { connectDB } from './lib/db'
+import { server } from './lib/socket'
 
-app.listen(config.port, () => {
+server.listen(config.port, () => {
     console.log(`Сервер запущен на ${config.port} порту`)
     connectDB()
 })

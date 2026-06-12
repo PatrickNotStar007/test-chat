@@ -5,8 +5,7 @@ import messageRouter from './routes/message.route'
 import cors from 'cors'
 import { errorHandler } from './middlewares/errorHandler'
 import config from './config/config'
-
-const app = express()
+import { app } from './lib/socket'
 
 app.use(express.json({ limit: '5mb' }))
 app.use(cors({ origin: config.clientUrl, credentials: true }))

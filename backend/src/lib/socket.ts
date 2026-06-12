@@ -15,3 +15,22 @@ const io = new Server(server, {
 })
 
 io.use(socketAuthMiddleware)
+
+const userSocketMap = new Map<string, string>()
+
+io.on('connection', (socket) => {
+    console.log('Пользователь подключён', socket.user._id)
+
+    const userId = socket.userId
+    userSocketMap.set(userId, socket.id)
+
+    io.emit('getOnlineUsers', Object.keys(userSocketMap))
+
+    socket.on('disconnect', () => {
+        console.log('Пользователь отключился', socket.user.fullName)
+        userSocketMap.delete(userId)
+        io.emit('getOnlineUsers', Object.keys(userSocketMap))
+    })
+})
+
+export { io, app, server }

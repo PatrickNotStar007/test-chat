@@ -1,24 +1,13 @@
-import type { Socket } from 'socket.io'
-import type { NextFunction } from 'express'
+/// <reference path="../types/socket.io.d.ts" />
+
 import jwt from 'jsonwebtoken'
 import config from '../config/config'
 import User from '../models/user.model'
-import { Types } from 'mongoose'
-
-interface IUser {
-    _id: Types.ObjectId
-    fullName: string
-    email: string
-}
-
-interface AuthenticatedSocket extends Socket {
-    user: IUser
-    userId: string
-}
+import { ExtendedError, Socket } from 'socket.io'
 
 export const socketAuthMiddleware = async (
-    socket: AuthenticatedSocket,
-    next: NextFunction
+    socket: Socket,
+    next: (err?: ExtendedError) => void
 ) => {
     try {
         const token = socket.handshake.headers.cookie
