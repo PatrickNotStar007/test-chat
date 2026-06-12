@@ -23,8 +23,11 @@ export const authController = {
         })
         if (validateUser.success === false) {
             console.error('Ошибка валидации', validateUser.error)
+            const errorMessages = validateUser.error.issues.map(
+                (issue) => issue.message
+            )
             return res.status(400).json({
-                message: 'Некорректные данные пользователя',
+                message: errorMessages[0],
                 error: z.treeifyError(validateUser.error),
             })
         }
@@ -77,8 +80,11 @@ export const authController = {
 
         if (validateUser.success === false) {
             console.error('Ошибка валидации при логине', validateUser.error)
+            const errorMessages = validateUser.error.issues.map(
+                (issue) => issue.message
+            )
             return res.status(400).json({
-                message: 'Некорректные данные пользователя',
+                message: errorMessages[0],
                 error: z.treeifyError(validateUser.error),
             })
         }

@@ -7,6 +7,7 @@ interface Config {
     nodeEnv: string
     mongoUri: string
     jwtSecret: string
+    clientUrl: string
     cloudinaryCloudName: string
     cloudinaryApiKey: string
     cloudinaryApiSecret: string
@@ -19,6 +20,7 @@ const config: Config = {
     nodeEnv: process.env.MNODE_ENV || 'development',
     mongoUri: process.env.MONGO_URI_LOCAL || '',
     jwtSecret: process.env.JWT_SECRET || '',
+    clientUrl: process.env.CLIENT_URL || '',
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY || '',
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET || '',

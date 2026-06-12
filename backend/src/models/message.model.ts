@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import { maxLength } from 'zod'
 
 const messageSchema = new mongoose.Schema(
     {

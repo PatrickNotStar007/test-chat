@@ -13,4 +13,8 @@ router.post('/logout', authController.logout)
 
 router.put('/update-profile', authMiddleware, authController.updateProfile)
 
+router.get('/check', authMiddleware, (req, res) =>
+    res.status(200).json(req.user)
+)
+
 export default router
